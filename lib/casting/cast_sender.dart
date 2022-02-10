@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:dart_chromecast/casting/cast_device.dart';
 import 'package:dart_chromecast/casting/cast_media.dart';
 import 'package:dart_chromecast/casting/cast_media_status.dart';
+import 'package:dart_chromecast/casting/cast_media_track.dart';
 import 'package:dart_chromecast/casting/cast_session.dart';
 import 'package:dart_chromecast/casting/connection_channel.dart';
 import 'package:dart_chromecast/casting/heartbeat_channel.dart';
@@ -182,11 +183,59 @@ class CastSender extends Object {
     _castMediaAction('SET_VOLUME', map);
   }
 
-  void setSubtitleTrack({int? subtitleTrackId}) {
-    /// Pass null to disable subtitles
-    Map<String, dynamic> map = {
-      'activeTrackIds': (subtitleTrackId != null) ? [subtitleTrackId] : []
-    };
+  /// Change audio or subtitle maintaining others configurations
+  void setMediaTrack({required CastMediaTrack mediaTrack}) {
+    /// Get active track(s)
+    final List _activeTrackIds =
+        _castSession?.castMediaStatus?.activeTrackIds ?? [];
+
+    /// Get available media tracks of same type
+    List<CastMediaTrack> _mediaTracks = [];
+
+    switch (mediaTrack.type) {
+      case 'TEXT':
+        _mediaTracks = _castSession?.castMediaStatus?.subtitles ?? [];
+        break;
+
+      case 'AUDIO':
+        _mediaTracks = _castSession?.castMediaStatus?.audios ?? [];
+        break;
+      default:
+    }
+
+    int _currentMediaTrackIndex = _activeTrackIds.indexWhere(
+      (id) {
+        for (var _mediaTrack in _mediaTracks) {
+          if (_mediaTrack.trackId == id) {
+            return true;
+          }
+        }
+
+        return false;
+      },
+    );
+
+    if (_currentMediaTrackIndex >= 0 &&
+        _currentMediaTrackIndex <= _activeTrackIds.length - 1) {
+      if (mediaTrack.trackId != _activeTrackIds[_currentMediaTrackIndex]) {
+        /// Switching audio or subtitle
+        _activeTrackIds[_currentMediaTrackIndex] = mediaTrack.trackId;
+      } else {
+        /// Is the same audio. Do nothing.
+        return;
+      }
+    } else {
+      _activeTrackIds.add(mediaTrack.trackId);
+    }
+
+    Map<String, dynamic> map = {'activeTrackIds': _activeTrackIds};
+
+    _castMediaAction('EDIT_TRACKS_INFO', map);
+  }
+
+  /// To disable subtitles
+  void disableSubtitles() {
+    Map<String, dynamic> map = {'activeTrackIds': []};
 
     _castMediaAction('EDIT_TRACKS_INFO', map);
   }

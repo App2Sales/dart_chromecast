@@ -50,6 +50,7 @@ class _CastExampleHomeState extends State<CastExampleHome> {
             _buildLoadVideoButton(),
             _buildControlsButtons(),
             _buildChangeSubtitles(),
+            _buildChangeAudios(),
             _buildStatusButton(),
           ],
         ),
@@ -153,7 +154,7 @@ class _CastExampleHomeState extends State<CastExampleHome> {
               // _castSender?.seek(
               //     _castSender?.castSession?.castMediaStatus?.position ??
               //         0 + 10);
-              _castSender?.seek(21 * 60 + 26);
+              _castSender?.seek(34 * 60 + 23);
             },
             icon: const Icon(Icons.forward_10),
           ),
@@ -168,13 +169,12 @@ class _CastExampleHomeState extends State<CastExampleHome> {
       builder: (context, snapshot) {
         List<CastMediaTrack> _subtitles =
             _castSender?.castSession?.castMediaStatus?.subtitles ?? [];
-        print('----------------------------');
         return Wrap(
           spacing: 10.0,
           alignment: WrapAlignment.center,
           children: [
                 ElevatedButton(
-                  onPressed: () => _castSender?.setSubtitleTrack(),
+                  onPressed: () => _castSender?.disableSubtitles(),
                   child: const Text('Disable Subtitles'),
                 ),
               ] +
@@ -182,13 +182,36 @@ class _CastExampleHomeState extends State<CastExampleHome> {
                   .map(
                     (subtitle) => ElevatedButton(
                       onPressed: () {
-                        _castSender?.setSubtitleTrack(
-                            subtitleTrackId: subtitle.trackId);
+                        _castSender?.setMediaTrack(mediaTrack: subtitle);
                       },
                       child: Text('Change subtitle to ${subtitle.name}'),
                     ),
                   )
                   .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildChangeAudios() {
+    return StreamBuilder<CastMediaStatus?>(
+      stream: _castSender?.castMediaStatusController.stream,
+      builder: (context, snapshot) {
+        List<CastMediaTrack> _audios =
+            _castSender?.castSession?.castMediaStatus?.audios ?? [];
+        return Wrap(
+          spacing: 10.0,
+          alignment: WrapAlignment.center,
+          children: _audios
+              .map(
+                (audio) => ElevatedButton(
+                  onPressed: () {
+                    _castSender?.setMediaTrack(mediaTrack: audio);
+                  },
+                  child: Text('Change audio to ${audio.name}'),
+                ),
+              )
+              .toList(),
         );
       },
     );
@@ -208,6 +231,14 @@ class _CastExampleHomeState extends State<CastExampleHome> {
         _castSender?.castSession?.castMediaStatus?.subtitles.forEach((element) {
           print(element.toChromeCastMap());
         });
+
+        print('=============== audios');
+        _castSender?.castSession?.castMediaStatus?.audios.forEach((element) {
+          print(element.toChromeCastMap());
+        });
+
+        print('=============== tracks ids');
+        print(_castSender?.castSession?.castMediaStatus?.activeTrackIds);
       },
       child: Text('Get infos'),
     );

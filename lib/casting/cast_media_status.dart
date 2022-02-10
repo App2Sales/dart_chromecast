@@ -20,6 +20,7 @@ class CastMediaStatus {
   final double? _volume;
   final double? _position;
   final Map? _media;
+  final List? _activeTrackIds;
 
   CastMediaStatus.fromChromeCastMediaStatus(Map mediaStatus)
       : _sessionId = mediaStatus['mediaSessionId'],
@@ -41,7 +42,8 @@ class CastMediaStatus {
             ? mediaStatus['volume']['level'].toDouble()
             : null,
         _position = mediaStatus['currentTime'].toDouble(),
-        _media = mediaStatus['media'];
+        _media = mediaStatus['media'],
+        _activeTrackIds = mediaStatus['activeTrackIds'];
 
   dynamic get sessionId => _sessionId;
 
@@ -71,6 +73,8 @@ class CastMediaStatus {
 
   Map? get media => _media;
 
+  List get activeTrackIds => _activeTrackIds ?? [];
+
   List<CastMediaTrack> get castMediaTracks {
     List<CastMediaTrack> _castMediaTracks = [];
     try {
@@ -91,6 +95,10 @@ class CastMediaStatus {
     return castMediaTracks.where((track) => track.type == 'TEXT').toList();
   }
 
+  List<CastMediaTrack> get audios {
+    return castMediaTracks.where((track) => track.type == 'AUDIO').toList();
+  }
+
   @override
   String toString() {
     return jsonEncode({
@@ -107,7 +115,8 @@ class CastMediaStatus {
       'hasError': _hasError,
       'volume': _volume,
       'position': _position,
-      'media': _media
+      'media': _media,
+      'activeTrackIds': _activeTrackIds,
     });
   }
 }

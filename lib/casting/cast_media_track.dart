@@ -2,7 +2,7 @@ class CastMediaTrack {
   /// This is an unique ID, used to reference the track
   final int trackId;
 
-  /// Track type. Can be TEXT, VIDEO OR AUDIO
+  /// Track type. Can be TEXT, VIDEO or AUDIO
   final String type;
 
   /// Track content type
