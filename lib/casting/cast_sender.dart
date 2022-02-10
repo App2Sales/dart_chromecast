@@ -182,6 +182,15 @@ class CastSender extends Object {
     _castMediaAction('SET_VOLUME', map);
   }
 
+  void setSubtitleTrack({int? subtitleTrackId}) {
+    /// Pass null to disable subtitles
+    Map<String, dynamic> map = {
+      'activeTrackIds': (subtitleTrackId != null) ? [subtitleTrackId] : []
+    };
+
+    _castMediaAction('EDIT_TRACKS_INFO', map);
+  }
+
   CastSession? get castSession => _castSession;
 
   // private

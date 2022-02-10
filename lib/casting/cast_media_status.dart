@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dart_chromecast/casting/cast_media_track.dart';
 import 'package:logging/logging.dart';
 
 class CastMediaStatus {
@@ -69,6 +70,26 @@ class CastMediaStatus {
   double? get position => _position;
 
   Map? get media => _media;
+
+  List<CastMediaTrack> get castMediaTracks {
+    List<CastMediaTrack> _castMediaTracks = [];
+    try {
+      List<dynamic>? _tracksMap = _media?['tracks'];
+
+      if (_tracksMap != null && _tracksMap.isNotEmpty) {
+        for (Map<String, dynamic> _trackMap in _tracksMap) {
+          CastMediaTrack _castMediaTrack = CastMediaTrack.fromMap(_trackMap);
+          _castMediaTracks.add(_castMediaTrack);
+        }
+      }
+    } on Exception catch (e) {}
+
+    return _castMediaTracks;
+  }
+
+  List<CastMediaTrack> get subtitles {
+    return castMediaTracks.where((track) => track.type == 'TEXT').toList();
+  }
 
   @override
   String toString() {
