@@ -14,7 +14,6 @@ import 'package:dart_chromecast/casting/receiver_channel.dart';
 import 'package:dart_chromecast/proto/cast_channel.pb.dart';
 import 'package:logging/logging.dart';
 import 'package:universal_io/io.dart';
-import 'package:rxdart/subjects.dart';
 
 class CastSender extends Object {
   final Logger log = new Logger('CastSender');
@@ -41,8 +40,8 @@ class CastSender extends Object {
   CastSender(this.device) {
     _contentQueue = [];
 
-    castSessionController = BehaviorSubject();
-    castMediaStatusController = BehaviorSubject();
+    castSessionController = StreamController.broadcast();
+    castMediaStatusController = StreamController.broadcast();
   }
 
   Future<bool> connect() async {
