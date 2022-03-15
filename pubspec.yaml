@@ -15,3 +15,4 @@ dependencies:
   xml: ^5.3.1
   logging: ^1.0.2
   multicast_dns: ^0.3.1
+  rxdart: ^0.27.3
