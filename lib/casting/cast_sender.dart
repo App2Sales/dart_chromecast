@@ -292,6 +292,15 @@ class CastSender extends Object {
     Map<String, dynamic> payloadMap = jsonDecode(message.payloadUtf8);
     log.fine(payloadMap['type']);
     if ('CLOSE' == payloadMap['type']) {
+      try {
+        _castSession?.isConnected = false;
+        castSessionController.add(_castSession);
+      } on Exception catch (e) {
+        log.severe(
+            "Could not add the CastSession to the CastSession Stream Controller: events will not be triggered");
+        log.severe(e.toString());
+        log.info("Closed? ${castSessionController.isClosed}");
+      }
       _dispose();
       connectionDidClose = true;
     }
