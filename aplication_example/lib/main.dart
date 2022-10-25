@@ -52,6 +52,7 @@ class _CastExampleHomeState extends State<CastExampleHome> {
             _buildChangeSubtitles(),
             _buildChangeAudios(),
             _buildStatusButton(),
+            _buildSubtitlesStyleButtons(),
           ],
         ),
       ),
@@ -241,6 +242,29 @@ class _CastExampleHomeState extends State<CastExampleHome> {
         print(_castSender?.castSession?.castMediaStatus?.activeTrackIds);
       },
       child: Text('Get infos'),
+    );
+  }
+
+  Widget _buildSubtitlesStyleButtons() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            _castSender?.setTextTrackStyle({
+              'fontScale': 2,
+              'backgroundColor': '#960064ff',
+            });
+          },
+          child: const Text('Set subtitle styles'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _castSender?.setTextTrackStyle({});
+          },
+          child: const Text('Unset subtitle styles'),
+        )
+      ],
     );
   }
 }
