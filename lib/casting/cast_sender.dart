@@ -240,6 +240,19 @@ class CastSender extends Object {
     _castMediaAction('EDIT_TRACKS_INFO', map);
   }
 
+  // To change subtitles styles
+  void setTextTrackStyle(Map<String, dynamic> textTrackStyle) {
+    Map<String, dynamic> map = {'textTrackStyle': textTrackStyle};
+
+    _castMediaAction('EDIT_TRACKS_INFO', map);
+  }
+
+  void unsetTextTrackStyle() {
+    Map<String, dynamic> map = {'textTrackStyle': {}};
+
+    _castMediaAction('EDIT_TRACKS_INFO', map);
+  }
+
   CastSession? get castSession => _castSession;
 
   // private
